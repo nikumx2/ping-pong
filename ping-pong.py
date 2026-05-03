@@ -14,8 +14,8 @@ clock = time.Clock()
 FPS = 60
 font.init()
 font = font.Font(None, 36)
-pL_lose = font.render('игрок слева проиграл', True, (200, 0, 0))
-pR_lose = font.render('игрок справа проиграл', True, (200, 0, 0))
+pL_lose = font.render('Игрок слева проиграл', True, (78,13,104))
+pR_lose = font.render('Игрок справа проиграл', True, (78,13,104))
 
 class GameSprite(sprite.Sprite):
     def __init__(self, player_image, player_x, player_y, player_speed, width, height):
@@ -50,8 +50,12 @@ class Player(GameSprite):
         if keys[K_DOWN] and self.rect.y < win_height - 75:
             self.rect.y += self.speed
 
+
 player_left = Player('left.png', 30, 310, 5, 30, 70)
 player_right = Player('right.png', win_width - 60, 310, 5, 30, 70)
+ball = GameSprite('ball.png', win_width / 2 - 15, win_height / 2 - 15, 5, 30, 30)
+speed_x = 5
+speed_y = 5
 
 while game:
     for e in event.get():
@@ -61,9 +65,26 @@ while game:
         window.fill(win_background)
         player_left.update_l()
         player_right.update_r()
+        ball.rect.x += speed_x
+        ball.rect.y += speed_y
+
+        if ball.rect.y <= 0 or ball.rect.y >= win_height - 30:
+            speed_y *= -1
+
+        if sprite.collide_rect(player_left, ball) or sprite.collide_rect(player_right, ball):
+            speed_x *= -1
+
+        if ball.rect.x <= 0:
+            finish == True
+            window.blit(pL_lose, (260, 200))
+
+        if ball.rect.x >=  win_width - 30:
+            finish == True
+            window.blit(pR_lose, (260, 200))
 
         player_left.reset()
         player_right.reset()
+        ball.reset()
 
 
         display.update()
